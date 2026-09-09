@@ -31,6 +31,7 @@ __pycache__/
 .DS_Store
 
 # ---- not part of the project ---------------------------------------------
-2606.09899v1.pdf     # reference paper, cited by arXiv id in docs/08_NOT_NOW.md
+# reference paper, cited by arXiv id in docs/08_NOT_NOW.md
+2606.09899v1.pdf
 skills
 UNIQUE

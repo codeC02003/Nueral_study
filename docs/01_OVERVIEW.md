@@ -1,5 +1,10 @@
 # A neural network that dissects another neural network
 
+> **HISTORICAL DOCUMENT — reflects the project state as of V2/V3, before the A₂ replication and the bootstrap CIs. Do not use for
+> current claims.** Kept as a record of what was believed and planned at the time.
+> The authoritative claims are in [`03_CLAIMS.md`](03_CLAIMS.md).
+
+
 ## The idea
 
 Two networks. **A** learns a task. **B** learns *A*.

@@ -1,5 +1,11 @@
 # V3 — B discovers A's important mechanisms 17x faster than random
 
+> **TERMINOLOGY NOTE (added later).** This document uses "mechanisms" for what is
+> more precisely called **causally important features and interventions**. B was
+> never shown to recover A's actual algorithm — the benchmark for that was abandoned
+> (`07_V5_ABANDONED.md`). The numbers below stand; only the word was too strong.
+> Authoritative wording: [`../docs/03_CLAIMS.md`](../docs/03_CLAIMS.md).
+
 **A frozen** @ 83,750 · pool 369,128 contexts · budget 2,400 (0.65% of the pool)
 · 3 seeds · 200 test features never acquired
 

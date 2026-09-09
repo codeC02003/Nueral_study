@@ -319,15 +319,23 @@ nueral/
     └── refresh_hud.sh             ← one command: re-snapshot + rebuild
 ```
 
-## What does not exist yet
+## Current state
 
-Being explicit, so nothing here oversells itself:
+Everything below reflects the finished project. Authoritative claims:
+[`03_CLAIMS.md`](03_CLAIMS.md).
 
-- **Network A proper** (the 2-layer transformer on the induction task) — not built.
-  What exists is a 17-parameter MLP standing in for it.
-- **Network B tiers 2–5** (sparse autoencoders, weight-space reading, ablation, the
-  hypothesis loop) — not built. What exists is Tier 1: a self-supervised probe.
-- **Network B tiers 3–5.** Weight-space reading, causal ablation, and the
-  hypothesis loop are not built. B is currently Tier 2 (sparse autoencoder).
-- **Verification against ground truth.** B's features look interpretable, but nothing
-  yet *grades* them. That needs the induction task, where the right answer is known.
+| | |
+|---|---|
+| **A₁** | frozen, step 83,750, 1.28 bits/char |
+| **A₂** | frozen, step 83,750, the preregistered replication |
+| **B** | sparse autoencoders trained on all four layers of both models |
+| **causal test** | done — 3.50x vs matched random controls |
+| **prediction** | done — calibration slope ≈ 1.0 on held-out features |
+| **experiment selection** | done — ~10-25x more efficient than random |
+| **uncertainty** | done — three-level hierarchical bootstrap, 5,000 reps |
+| **ground-truth benchmark** | **abandoned** — instrument invalid, B never run. `../milestones/v5/` |
+
+Still not built: B reading A's **weights** (only activations so far), cross-layer
+feature identity, and any validated claim that B's decomposition matches A's
+algorithm. Deferred items with trigger conditions: [`08_NOT_NOW.md`](08_NOT_NOW.md).
+

@@ -1,5 +1,10 @@
 # V2 — the plan
 
+> **HISTORICAL DOCUMENT — reflects the project state as of V2, before V3/V4 superseded this plan. Do not use for
+> current claims.** Kept as a record of what was believed and planned at the time.
+> The authoritative claims are in [`03_CLAIMS.md`](03_CLAIMS.md).
+
+
 **One question:**
 
 > Can B predict the causal effect of unseen interventions on frozen A, and by

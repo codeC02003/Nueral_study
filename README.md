@@ -5,9 +5,14 @@ labels, its only training signal coming from A's own loss.
 
 ## The standing claim
 
-> **B finds a frozen language model's causally important mechanisms roughly 10–25x
-> faster than random search, calibrated to within the resolution of the data.
-> Replicated on a second, independently trained model.**
+> **B finds causally important internal features and interventions in a frozen
+> language model roughly 10–25x more efficiently than random search, and predicts
+> the effect of interventions it has never tried. Replicated prospectively on a
+> second, independently trained model.**
+
+**"Mechanism" is deliberately not used here.** It is reserved for the stronger claim
+— that B's decomposition corresponds to A's actual algorithm — which is **untested**.
+See [`docs/03_CLAIMS.md`](docs/03_CLAIMS.md), the authoritative record.
 
 ## What is explicitly not claimed
 
@@ -34,10 +39,18 @@ labels, its only training signal coming from A's own loss.
 All intervals are three-level hierarchical bootstraps (features, contexts,
 acquisition seed).
 
+## The authoritative document
+
+[`docs/03_CLAIMS.md`](docs/03_CLAIMS.md) is the single source of truth for what is
+claimed. Where any other file disagrees, that one wins. Two documents
+(`01_OVERVIEW.md`, `07_OPEN_ITEMS.md`) are marked HISTORICAL — they record what was
+believed at V2/V3 and are preserved, not corrected.
+
 ## Read in this order
 
 | | |
 |---|---|
+| [`docs/00_START_HERE.md`](docs/00_START_HERE.md) | **new to this?** the whole project in plain words, every term explained |
 | [`docs/01_OVERVIEW.md`](docs/01_OVERVIEW.md) | the idea, the fundamentals it rests on, what it consumed |
 | [`docs/02_PROJECT_HISTORY.md`](docs/02_PROJECT_HISTORY.md) | all 13 phases, **including every failure and retraction** |
 | [`docs/03_CLAIMS.md`](docs/03_CLAIMS.md) | four claims, separately graded |
@@ -64,7 +77,7 @@ reproduction commands.
 ## Layout
 
 ```
-docs/            the written record, numbered in reading order
+docs/            00 = plain-words intro; 01-09 = the technical record
 findings/        results, numbered chronologically, with raw JSON
 src/
   nn/            the engine, written from scratch: scalar autograd -> tensors -> GPT -> SAE

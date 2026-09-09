@@ -71,9 +71,15 @@ heuristic can satisfy without understanding anything.
     the experiment : run A with d zeroed; measure the actual change
     B's reward     : accuracy of the PREDICTION, not the size of the effect
 
-This cannot be faked. Predicting the consequence of removing something requires a
-model of what that thing does — including predicting *zero* for a direction A
-carries but does not use, which is exactly the failure mode probes cannot detect.
+This is substantially stronger evidence than salience ranking: it requires
+generalising *quantitative counterfactual effects* to unseen features and contexts,
+including predicting near-zero for a direction A carries but does not use — the
+failure mode probes cannot detect.
+
+**Not** proof of mechanistic correspondence, though. A predictor may exploit
+statistical regularities of A's activations without representing A's algorithm.
+Separating those is what V5 was built for; V5 did not run. (Wording tightened after
+review; the original said "cannot be faked", which overstated it.)
 
 Three consequences:
 
@@ -336,6 +342,8 @@ and prediction-scoring.
   loss change is the reward" — that rewards a *salience detector*, which a heuristic
   can satisfy. Theirs: B states the effect size in advance and is scored on it,
   which cannot be faked. **My version was the weaker objective.**
+  *(Recorded as argued at the time. "Cannot be faked" was later judged an overstatement
+  — see the correction in the Tier 4 section above and `03_CLAIMS.md`.)*
 - **Experiments-as-dataset: adopted.**
 
 **Review 2** cut the scope hard and was right. One question, two metrics, four steps.

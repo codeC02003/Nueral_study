@@ -1,116 +1,191 @@
-# What is claimed, and what each claim rests on
+# CLAIMS — the authoritative record
 
-Written to keep separate claims separately graded. The failure mode this guards
-against is letting evidence for a narrow claim quietly support a broad one.
+**This file is the single source of truth for what this project claims.** Where any
+other document disagrees, this one wins. Last updated after V5's abandonment; it
+reflects the final state, not any intermediate one.
 
 ---
 
-## CLAIM 1 — B predicts intervention effects, and finds high-impact interventions faster than random
+## A note on the word "mechanism"
 
-**Status: fairly strong.**
+Used precisely throughout, because the distinction is the whole point:
 
-**This claim has objective ground truth.** We perform the intervention on frozen A
-and measure A's actual loss. The target is directly observable, not inferred, so
-held-out interventions *are* the ground truth for this claim. It does not depend on
-any known-circuit benchmark.
+| term | meaning | established here? |
+|---|---|---|
+| **feature / direction** | a direction in activation space that B identified | yes |
+| **causally important** | removing it measurably degrades A, more than a matched random direction does | **yes** |
+| **mechanism** | a description that corresponds to the algorithm A actually implements | **no — untested** |
 
-Evidence:
+So the headline says *features and interventions*, not *mechanisms*. "Mechanism" is
+reserved for the stronger thing V5 was built to test and did not test.
+
+---
+
+## THE HEADLINE CLAIM
+
+> **B, given no human labels, finds causally important internal features and
+> interventions roughly 10–25x more efficiently than random search, and predicts the
+> effect of interventions it has never tried. Replicated prospectively on a second,
+> independently trained model.**
+
+---
+
+## CLAIM 1 — B predicts held-out causal intervention effects
+
+**Status: established.**
+
+Ground truth is direct: we perform the intervention on frozen A and measure A's
+actual loss. The target is observable, not inferred, so held-out interventions *are*
+the ground truth for this claim. It needs no known-circuit benchmark.
+
 - calibration slope ≈ 1.0 on held-out contexts of features never acquired
-- 12.45x random on captured causal mass; 39.2% of the oracle bound at 0.65% budget
-- controls: magnitude-matched random directions, 3.50x, Cohen d = 1.19
+- of 8 model-layer cells, only one resolvably differs from slope 1.0
+  (A₁ layer 0: 1.28, 95% CI [1.04, 1.57])
+- a linear baseline scores R² = −0.245, so the learned structure is genuinely
+  nonlinear rather than a fitted trend
 
-Limits: `mag80 + log` was selected post-hoc on A₁ (see Claim 3). No bootstrap CIs yet.
+**Why this is stronger than salience ranking, stated carefully:** accurate held-out
+causal-effect prediction requires generalising *quantitative counterfactual effects*
+to unseen features and contexts — including predicting near-zero for a direction A
+carries but does not use. That is substantially more demanding than ranking which
+directions matter. It does **not** follow that B represents A's algorithm: a
+predictor may exploit statistical regularities of A's activations without any
+correspondence to A's internal computation. Distinguishing those is exactly what V5
+was for, and V5 did not run.
 
----
+## CLAIM 2 — B discovers high-impact directions far more efficiently than random
 
-## CLAIM 2 — this is a property of the method, not of one layer
+**Status: established.**
 
-**Status: strong.**
+- A₁ layer 2: **16.0x random**, 95% CI **[9.6, 24.5]**
+- 30–40% of the oracle bound (the best any selector could reach at that budget),
+  against random's 2.4%
+- lower bound above 2.9x at every layer of both models
 
-The frozen configuration was applied unchanged to three layers it had never seen.
+**Report the interval, not the point estimate.** "12.45x" appeared in earlier
+documents; the defensible figure is **~10–25x**.
 
-```
-oracle %:  L0 39.4   L1 35.8   L2 31.4   L3 29.6      mean 34.1, CV 11.2%
-```
+## CLAIM 3 — B's features are causally used by A, not merely correlated
 
-Layer 2 - where the config was developed - ranked third of four. Also robust to a
-9x change in SAE training budget, though that was tested on layer 2 only.
+**Status: established.**
 
-Caveat carried: n = 4 layers. "Appears at every layer tested", not "layer-invariant".
+- 3.50x more damage per unit removed than **magnitude-matched random directions**
+  (Cohen's d = 1.19)
+- 67% of a feature's damage falls on a single character, vs 8% for random directions
 
----
+The matched control is what makes this a claim; deleting anything degrades a network.
 
-## CLAIM 3 — this generalises across independently trained models
+**Scope:** this establishes that the directions are load-bearing. It does **not**
+validate any semantic reading of them. "f515 → the `r` in `return`" describes where
+the damage lands; it is not a verified account of A's computation.
 
-**Status: pending A₂.**
+## CLAIM 4 — this is a property of the method, not of one layer
 
-`05_PREREGISTRATION_A2.md` is a **prospective replication preregistration** - it fixes
-the evaluation of A₂ in advance. It is *not* a preregistration of the project:
-`mag80 + log` was discovered post-hoc on A₁, and that ordering is on the record.
+**Status: established.**
 
-**With two models, no conventional significance test about cross-model
-generalisation is appropriate.** n = 2 cannot support a population-level claim. What
-A₂ can deliver is a clean, preregistered replication plus uncertainty intervals
-*within* each model. Population-level generality needs many more independently
-trained As, and is **not claimed**.
+Frozen configuration applied unchanged to all four layers. Oracle % mean 34.1,
+range 29.6–39.4 (9.8 pp), CV 11.2%. Layer 2 — where the configuration was developed
+— ranked third of four.
 
----
+**Scope:** four layers is a small sample. The claim is "appears at every layer
+tested", not "layer-invariant". Per-layer *differences* are **not resolvable**: every
+per-layer CI overlaps between models.
 
-## CLAIM 4 — B has discovered A's actual mechanism / understands what A computes
+## CLAIM 5 — this reproduces on a second independently trained model
 
-**Status: NOT VALIDATED, AND NOW UNTESTED-BY-ATTEMPT. This claim is not made.**
+**Status: replicated once, prospectively.**
 
-V5 attempted a known-circuit benchmark and was **abandoned after 3 VOID
-attempts** — the subject model never produced the canonical circuit the test needed,
-so B was never run against it. The hypothesis is untested, not falsified.
-See `findings/07_V5_ABANDONED.md`.
+Same architecture, corpus and hyperparameters; seed the only difference. Pass/fail
+fixed in writing before A₂ existed (`05_PREREGISTRATION_A2.md`).
 
-This is where a known-circuit benchmark becomes essential, and it is the reason the
-induction task was in the original plan.
+- A₂ four-layer mean oracle % **29.4** (preregistered band 26.1–42.1) — **PASS**
+- minimum layer 26.4% (floor 15%) — **PASS**
+- 19 of 20 A₁-vs-A₂ CI comparisons overlap
 
-What we can support: B found directions that are **causally load-bearing** - removing
-them damages A far more than removing comparable random directions, and the damage
-is concentrated (67% on a single character vs 8% for random).
+**Scope:** n = 2 is a clean preregistered replication, **not** population-level
+generality. No statistical claim about generalisation across models is made or
+supported.
 
-What we cannot support: that B's decomposition **corresponds to the true algorithm
-inside A**. Matched controls establish that these directions matter causally. They
-do **not** validate the semantic reading. `f515 -> the r in return` is a plausible
-interpretation of where the damage lands; it is not a verified account of A's
-mechanism.
+**A prediction of ours that this falsified:** we predicted on record that calibration
+would again degrade with depth and layer 3 would again fail. It did not. Bootstrap
+CIs later showed the original A₁ observation had no evidential basis either
+(slope 0.80, CI [0.13, 1.51]).
 
-To close it: train a small A on a task whose circuit is already established
-(induction: previous-token head in layer 0 feeding an induction head in layer 1),
-run the identical pipeline, and count what fraction of the known circuit B recovers.
+## CLAIM 6 — B's decomposition corresponds to A's actual algorithm
 
----
+**Status: UNTESTED. Not claimed, and not rejected.**
 
-## On uncertainty quantification
+V5 built a known-circuit benchmark to test exactly this. Across three attempts the
+subject model never produced the canonical circuit the test scores against, so its
+validity precondition never held and **B was never run against it**. Abandoned per
+its own protocol after three attempts.
 
-The interventions are **deterministic** - repeating one gives a difference of
-exactly `0.00e+00`, so there is no repeated-measurement noise.
-
-That does **not** remove sampling uncertainty. Which features and contexts enter the
-pool, the train/test split, and the acquisition trajectory are all random draws.
-**Bootstrap confidence intervals over features/contexts remain necessary** and are
-not yet computed for the headline numbers.
-
-## On oracle %
-
-A metric constructed for this project. That is acceptable because its definition is
-fixed and stated (captured causal mass / the maximum any selector could capture at
-the same budget), and because raw mass, x random and top-1% recall are reported
-alongside it and agree in direction. What would be illegitimate is changing the
-metric repeatedly until a favourable result appears - the record shows the opposite:
-Metric 2's first definition produced a negative result that was reported as such.
+The hypothesis is therefore **untested**, not falsified. See
+[`../milestones/v5/`](../milestones/v5/) and
+[`../findings/07_V5_ABANDONED.md`](../findings/07_V5_ABANDONED.md).
 
 ---
 
-## Grading
+## Uncertainty
 
-| | status |
+All intervals are **three-level hierarchical bootstraps**, 5,000 reps: resample
+features (the cluster), then contexts within each, then the acquisition seed. Rows
+sharing a feature are not independent, and the reported figures are means over
+acquisition seeds — a naive row-level or single-trajectory bootstrap understates the
+uncertainty in both respects.
+
+Interventions are deterministic (repeating one differs by exactly `0.00e+00`), which
+removes repeated-measurement noise but **not** sampling uncertainty over which
+features and contexts enter the pool.
+
+**Limitation:** the seed component is estimated from only 3 acquisition seeds.
+
+---
+
+## Claims we retracted
+
+Both are preserved in the project history rather than removed.
+
+1. **"Calibration degrades with depth; layer 3 fails."** Bootstrap slope for A₁
+   layer 3 is 0.80, CI **[0.13, 1.51]** — the widest in the grid. No evidential
+   basis at any point.
+2. **"Per-layer detail does not replicate."** All per-layer CIs overlap. The
+   differences are **not resolvable at this sample size**, which is weaker than
+   either "replicates" or "fails to replicate".
+
+---
+
+## Honest limitations on the whole package
+
+- **`mag80 + log` was selected post-hoc on A₁.** The A₂ preregistration covers A₂'s
+  *evaluation* only; it does not make the project preregistered.
+- **No related-work comparison has been done.** No novelty claim should be made
+  until it is.
+- **Two training-flag bugs** overshot a preregistered target during A₂; both were
+  caught before any metric was computed, both runs discarded, both logged.
+
+---
+
+## What is open
+
+| | |
 |---|---|
-| causal discovery (Claim 1) | fairly strong |
-| cross-layer robustness (Claim 2) | strong |
-| cross-model generalisation (Claim 3) | pending A₂ |
-| mechanistic correctness (Claim 4) | **unvalidated** |
-| population-level generality | weak - too few independently trained As |
+| **Mechanistic correspondence** | Claim 6. Needs a ground-truth instrument that does not assume the canonical decomposition — see the V6 sketch in `../findings/07_V5_ABANDONED.md`. |
+| **Population generality** | needs many more independently trained models than 2. |
+| **Coverage** | B reads one residual stream per model. It has never read A's weights, attention heads, or MLP neurons directly. |
+| **Related work** | required before any novelty statement. |
+
+---
+
+## Document status
+
+| document | status |
+|---|---|
+| **this file** | **authoritative, current** |
+| `../README.md` | current summary |
+| `00_START_HERE.md` | current, plain-language |
+| `02_PROJECT_HISTORY.md` | historical record — preserves superseded claims *as history* |
+| `01_OVERVIEW.md`, `07_OPEN_ITEMS.md` | **HISTORICAL** — reflect V2/V3 state, banner at top |
+| `04_METRICS.md` | current for metric definitions and results |
+| `../findings/*` | dated results; each true as of its date |
+| `../milestones/v{3,4,5}/` | frozen; see `v4/ERRATA.md` for a terminology correction |
