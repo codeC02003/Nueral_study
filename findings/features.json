@@ -1,0 +1,295 @@
+{
+ "a_step": 83750,
+ "b_step": 3000,
+ "layer": 2,
+ "features": [
+  {
+   "feature": 400,
+   "max_act": 1.782122254371643,
+   "contexts": [
+    " format, encoding,'",
+    "   or name in seenm",
+    "as \"lists\" or \"tupB",
+    "r",
+    "se a quote from qur",
+    "   ), \"call count\"r"
+   ]
+  },
+  {
+   "feature": 279,
+   "max_act": 1.526086449623108,
+   "contexts": [
+    " format, encoding,'",
+    " to a CGI script.\\n\"",
+    "r",
+    "se a quote from qur",
+    "   ), \"call count\"r",
+    "elf):\\n        \"\"\"Rr"
+   ]
+  },
+  {
+   "feature": 443,
+   "max_act": 0.9646492600440979,
+   "contexts": [
+    "value):\\n        \"\"\"",
+    " info):\\n        \"\"\"",
+    "t, *pairs):\\n    \"\"\"",
+    "rfile):\\n        \"\"\"",
+    "de_info(x):\\n    \"\"\"",
+    "(self):\\n        \"\"\""
+   ]
+  },
+  {
+   "feature": 249,
+   "max_act": 0.746766209602356,
+   "contexts": [
+    "g value for the nam",
+    "e_info(arg, get_nam",
+    " {fullname!r}\", nam",
+    " argrepr = _get_nam",
+    "  # mapping of (nam",
+    "ose ValueError(\"nam"
+   ]
+  },
+  {
+   "feature": 742,
+   "max_act": 0.7233973741531372,
+   "contexts": [
+    "w\"):\\n            ra",
+    "s:\\n              ra",
+    "\\n                ra",
+    "\\n                ra",
+    " will be\\n        ra",
+    " in an unlimited ra"
+   ]
+  },
+  {
+   "feature": 583,
+   "max_act": 0.7174067497253418,
+   "contexts": [
+    "argval, argrepr = _",
+    "?:\\n    [Tt ]\\n    {_",
+    "       '   (virtu _",
+    "      yield buf + _",
+    "ed state.\\n        _",
+    "               or _"
+   ]
+  },
+  {
+   "feature": 49,
+   "max_act": 0.716039776802063,
+   "contexts": [
+    "ring_type(self, val",
+    "buf + _floatstr(val",
+    "set the\\n        val",
+    "elif isinstance(val",
+    "          raise Val",
+    "o the specified val"
+   ]
+  },
+  {
+   "feature": 991,
+   "max_act": 0.6911122798919678,
+   "contexts": [
+    "\\n          '-------",
+    "'\\n          '------",
+    "n'\\n          '-----",
+    "         '---------",
+    "          '--------",
+    "        '----------"
+   ]
+  },
+  {
+   "feature": 56,
+   "max_act": 0.656806468963623,
+   "contexts": [
+    "f __index__(self) -",
+    "ceURI, localName) -",
+    "cts\\n'\\n          '-",
+    "e])-(0[1-9]|[12][0-",
+    "calls\"     : (((1,-",
+    "     'As we])-(0[1-"
+   ]
+  },
+  {
+   "feature": 557,
+   "max_act": 0.6523637175559998,
+   "contexts": [
+    "ected()\\n\\n        if",
+    " = None\\n\\n        if",
+    "eader\\n\\nU\\n        if",
+    " files\")\\n        if",
+    "ullname)\\n        if",
+    "ring.\"\"\"\\n        if"
+   ]
+  },
+  {
+   "feature": 811,
+   "max_act": 0.6238218545913696,
+   "contexts": [
+    "= None\\n        self",
+    "id, 0)\\n        self",
+    "ceback\\n        self",
+    "ction.\\n        self",
+    "e:\\n            self",
+    "               self"
+   ]
+  },
+  {
+   "feature": 958,
+   "max_act": 0.6226205825805664,
+   "contexts": [
+    "   self.arguments =",
+    "alue.ching_blocks =",
+    "_arg_dict_default =",
+    "           endpos =",
+    "bc_negative_cache =",
+    "  argval, argrepr ="
+   ]
+  },
+  {
+   "feature": 18,
+   "max_act": 0.6214299201965332,
+   "contexts": [
+    "ing\\n            els",
+    "t()\\n            els",
+    "eak\\n\\n       ive els",
+    "ITS\\n            eli",
+    "'\\n              els",
+    "me)\\n            eli"
+   ]
+  },
+  {
+   "feature": 47,
+   "max_act": 0.6207971572875977,
+   "contexts": [
+    "ext, *pairs):\\n    \"",
+    "f, info):\\n        \"",
+    "gi(self):\\n        \"",
+    "code_info(x):\\n    \"",
+    "harfile):\\n        \"",
+    ", value):\\n        \""
+   ]
+  },
+  {
+   "feature": 919,
+   "max_act": 0.6185586452484131,
+   "contexts": [
+    "             i += 2",
+    "      self.msgout(2",
+    "1])  # date, e.g. 1",
+    " \"calls\"     : (((1",
+    "_code(code[i: i + 2",
+    "        if pos >= 0"
+   ]
+  },
+  {
+   "feature": 262,
+   "max_act": 0.6124396324157715,
+   "contexts": [
+    "self).addSubT the \"",
+    "       'will call \"",
+    "quences* (such as \"",
+    "ame in seenmodule(\"",
+    "uch as \"lists\" or \"",
+    "ome have reported \""
+   ]
+  },
+  {
+   "feature": 600,
+   "max_act": 0.6048522591590881,
+   "contexts": [
+    "ame)\\n            el",
+    "ling\\n            el",
+    "ct()\\n            el",
+    "icode-wrapped    el",
+    "BITS\\n            el",
+    "reak\\n\\n       ive el"
+   ]
+  },
+  {
+   "feature": 213,
+   "max_act": 0.6004748940467834,
+   "contexts": [
+    "tilities written in",
+    " of given column in",
+    "omment above for in",
+    ")\" on such value in",
+    "nt byte is a bit in",
+    " stream for this in"
+   ]
+  },
+  {
+   "feature": 523,
+   "max_act": 0.5909841656684875,
+   "contexts": [
+    "ted response\" excep",
+    " \"\"\"Rribe the excep",
+    "     if loc   excep",
+    "rors or other excep",
+    "lf._loop.call_excep",
+    "            '(excep"
+   ]
+  },
+  {
+   "feature": 490,
+   "max_act": 0.5886876583099365,
+   "contexts": [
+    "][0-9]|3[01])  # da",
+    "   L.insert(0, n.da",
+    "coghlan at gself.do",
+    "        if self._dt",
+    "           self._dt",
+    "r"
+   ]
+  },
+  {
+   "feature": 377,
+   "max_act": 0.5851727724075317,
+   "contexts": [
+    "SIX.1-2001 global h",
+    "           # Some h",
+    "     elif deop in h",
+    "lf._sock.shutdown(h",
+    "op.call_exception_h",
+    "block in order to h"
+   ]
+  },
+  {
+   "feature": 136,
+   "max_act": 0.5836557149887085,
+   "contexts": [
+    "       raise LoadEr",
+    "      raise ValueEr",
+    "  raise ZipImportEr",
+    "# The prose ValueEr",
+    "ributeEr",
+    "ributeError, TypeEr"
+   ]
+  },
+  {
+   "feature": 415,
+   "max_act": 0.5830258131027222,
+   "contexts": [
+    "st whether self.pat",
+    "h = _get_module_pat",
+    "        tree['__pat",
+    "\"__init__\", m.__pat",
+    "lname)\\n\\n        pat",
+    ": {archive!r}\", pat"
+   ]
+  },
+  {
+   "feature": 878,
+   "max_act": 0.5535194277763367,
+   "contexts": [
+    " the functools modu",
+    " attributes on modu",
+    "     self.load_modu",
+    "r(f\"can't find modu",
+    "   path = _get_modu",
+    "te['_signatu C modu"
+   ]
+  }
+ ]
+}

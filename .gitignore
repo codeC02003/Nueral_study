@@ -1,0 +1,36 @@
+# ---- large, regenerable artefacts ----------------------------------------
+# Nothing here is a result. Every path below is reproduced by a script, and the
+# command is named. Keeping them out means no Git LFS, fast clones, and a clean
+# path to making the repo public later.
+
+# the causal dataset and per-row residuals   -> python3 src/harvest.py --with-resid
+experiments/contextual.npz
+experiments/row_resid.npy
+# bootstrap row-level arrays                 -> python3 src/bootstrap_prep.py --model {a,a2} --layer {0..3} --seeds 3
+experiments/boot/
+
+# model weights                              -> src/train_a.py, src/train_b.py, src/train_ind.py
+# (the frozen copies under milestones/ ARE committed - they are the record)
+checkpoints/
+
+# the corpus                                 -> python3 src/build_corpus.py
+data/corpus.txt
+data/corpus.npy
+
+# rendered outputs                           -> ./src/serve.sh
+viz/anatomy.html
+viz/neurons.json
+
+# run logs and generated samples
+logs/
+samples/
+status/
+
+__pycache__/
+*.pyc
+.DS_Store
+
+# ---- not part of the project ---------------------------------------------
+2606.09899v1.pdf     # reference paper, cited by arXiv id in docs/08_NOT_NOW.md
+skills
+UNIQUE

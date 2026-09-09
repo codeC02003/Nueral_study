@@ -1,0 +1,71 @@
+{
+ "milestone": "V5 \u2014 ground-truth benchmark ABANDONED / instrument invalid",
+ "frozen": "2026-09-09",
+ "status": "FROZEN. This is NOT a mechanistic-validation milestone. The benchmark was abandoned.",
+ "THE FROZEN CONCLUSION": "V5 did not test whether B recovers A's true algorithm, because the preregistered ground-truth instrument failed its own validity condition. No mechanistic-understanding claim is supported or rejected. B was never run.",
+ "why_B_was_never_evaluated": "PREREGISTRATION_V5.md section 3 gates the whole benchmark on a validity precondition: A_ind must contain the canonical circuit the test scores against (|C| >= 2, one member per layer, thresholds 0.5). Across three attempts that condition never held, so there was nothing valid to score B against. Per section 3 the benchmark is abandoned after 3 attempts. B was not run at any point; no B result was produced, seen, or discarded.",
+ "three_attempts": [
+  {
+   "n": 1,
+   "design": "tiled period, random L",
+   "learned_task": "yes, ratio 0.000",
+   "canonical_circuit": "NO - ablation put both critical heads in layer 0 (+7.30, +5.69); 0.0% of layer-1 attention on correct-token positions",
+   "diagnosis": "tiling let the model exploit periodicity instead of content matching",
+   "verdict": "VOID"
+  },
+  {
+   "n": 2,
+   "design": "[P][filler][P]",
+   "learned_task": "no - plateaued at ratio 0.786 over 80k steps",
+   "canonical_circuit": "NO - all attention scores near zero, no circuit at all",
+   "diagnosis": "lookback of 78-108 tokens too long; predictable fraction only ~27%",
+   "verdict": "VOID"
+  },
+  {
+   "n": 3,
+   "design": "[filler][P][P], V=128, L~U{40..60}",
+   "learned_task": "yes, ratio 0.188 at step 180,000",
+   "generalisation": "PASSED - held-out periods L in {45,55} give loss 0.9045 vs 1.1026 threshold, so the model does CONTENT matching, not positional memorisation",
+   "canonical_circuit": "NO - best previous-token score 0.1894 (L0H1), best induction score 0.1823 (L1H3), threshold 0.5. |C| = 0.",
+   "what_did_form": "A real two-layer critical pair by ablation: L0H3 (+11.75) -> L1H3 (+12.11), baseline loss 0.797. L1H3 carries the highest induction score, ~25x the ~0.008 uniform baseline. But L0H3 is NOT a previous-token head (0.0368). The model routes content matching in a non-canonical way.",
+   "verdict": "VOID"
+  }
+ ],
+ "scorer_bug_and_correction": {
+  "bug": "When the layout changed to [filler][P][P] the prior-occurrence index stayed at t-(T-L) instead of t-L, pointing into the FILLER - a position that can never be the answer.",
+  "effect": "L1H3's induction score read 0.0001. After correction: 0.1823.",
+  "why_fixing_it_was_legitimate": "Section 2's DEFINITION ('t_first is the token's unique earlier occurrence') never changed; only its implementation was wrong. Verified empirically before use.",
+  "consequence_if_uncaught": "The record would have said 'no induction head at all' when in fact one exists at ~25x baseline."
+ },
+ "what_is_NOT_concluded": [
+  "That B fails to recover circuits \u2014 B was never run.",
+  "That the canonical induction circuit does not exist in transformers \u2014 it is well established in the literature on the standard fixed-offset task.",
+  "That the 0.5 thresholds are wrong \u2014 declining to lower them after three failures was a choice against post-hoc threshold-shopping, not a finding that they are miscalibrated."
+ ],
+ "descriptive_finding_that_does_stand": "Across three task designs, a 2-layer attention-only transformer learned content-based copying (verified by held-out-period generalisation) without producing a canonical previous-token / induction-head pair at threshold 0.5. This is either real circuit diversity in this regime, or evidence that these two scores at that threshold are the wrong instrument for these task variants. These attempts CANNOT distinguish those.",
+ "deviations": "Section 3 permitted retraining with a different seed. The task was redesigned twice (Rev 4, Rev 5), exceeding that allowance. Recorded as a deviation, not presented as a permitted retrain. Bounded by: B was never run, and sections 4-9 (mapping, score, controls, thresholds, pipeline, failure interpretation) were never touched.",
+ "relation_to_V4": "V4 is UNAFFECTED and must not be edited by anything here. V4's claim \u2014 B finds causally load-bearing structure ~10-25x faster than random, replicated across two models \u2014 rests on interventions against frozen A1/A2 and requires no known-circuit benchmark.",
+ "attempt3_ground_truth": {
+  "prev_token_scores": [
+   0.07743268242338672,
+   0.18936189531814307,
+   0.031127437081886457,
+   0.036766148583653076
+  ],
+  "induction_scores": [
+   0.001698754816273625,
+   0.009664838271739503,
+   0.008172165629730443,
+   0.18229001778333137
+  ],
+  "C": [],
+  "cond1": true,
+  "cond2": false,
+  "cond3": true,
+  "verdict": "VOID"
+ },
+ "reproduce": [
+  "python3 train_ind.py                # attempt 3 design, trains and scores",
+  "see findings/V5_ABANDONED.md for the ablation and the V6 requirements"
+ ]
+}

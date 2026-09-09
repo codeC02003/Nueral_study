@@ -1,0 +1,25 @@
+{
+ "pts": [
+  0.07743268242338672,
+  0.18936189531814307,
+  0.031127437081886457,
+  0.036766148583653076
+ ],
+ "ind": [
+  0.001698754816273625,
+  0.009664838271739503,
+  0.008172165629730443,
+  0.18229001778333137
+ ],
+ "C": [],
+ "chance": 0.0,
+ "loss_first": 4.850288438796997,
+ "loss_repeat": 0.8821078225970268,
+ "loss_repeat_heldout": 0.9044776111841202,
+ "cond1": true,
+ "cond2": false,
+ "cond3": true,
+ "verdict": "VOID",
+ "step": 180000,
+ "note": "IND recomputed after fixing an index-math bug; model unchanged"
+}

@@ -1,0 +1,59 @@
+{
+ "milestone": "V4 \u2014 cross-model replication with quantified uncertainty",
+ "frozen": "2026-09-08",
+ "status": "FROZEN. Do not modify. The induction benchmark is V5.",
+ "models": {
+  "A1": {
+   "step": 83750,
+   "val": 1.0536,
+   "seed": "unseeded (default)"
+  },
+  "A2": {
+   "step": 83750,
+   "val": 1.0228,
+   "seed": 1234
+  },
+  "shared": "4L x 4H x 128d, 819,968 params, 9.2M-char Python stdlib, char-level vocab 96"
+ },
+ "evaluation": {
+  "sae_steps": 40000,
+  "acquisition": "mag80 (80% predicted-magnitude, 20% random)",
+  "target": "log-magnitude sign(y)*log1p(|y|)",
+  "budget": 2400,
+  "seeds": 3,
+  "split": "by feature, 20% held out"
+ },
+ "primary_claims": {
+  "discovery_vs_random": {
+   "value": "~10-25x",
+   "detail": "A1 L2 16.0x [9.6, 24.5]; every layer of both models has a lower bound above 2.9x"
+  },
+  "oracle_pct_mean": {
+   "A1": 34.6,
+   "A2": 30.0,
+   "preregistered_band": [
+    26.1,
+    42.1
+   ],
+   "result": "PASS"
+  },
+  "calibration": "only 1 of 8 cells resolvably differs from slope 1.0 (A1 L0: 1.28 [1.04, 1.57])"
+ },
+ "retracted": [
+  "'Calibration degrades with depth; layer 3 fails' - A1 L3 slope 0.80 [0.13, 1.51], no evidential basis at any point.",
+  "'Per-layer detail does not replicate' - all per-layer CIs overlap; differences are not RESOLVABLE, which is weaker."
+ ],
+ "scope_limits": [
+  "n=2 models: a clean preregistered replication, NOT population-level generality.",
+  "Seed-variance component estimated from only 3 acquisition seeds.",
+  "mag80+log was selected post-hoc on A1; the A2 preregistration covers A2's evaluation only.",
+  "Mechanistic correctness UNVALIDATED - no known-circuit benchmark. That is V5.",
+  "Matched controls show the directions are causally load-bearing; they do NOT validate any semantic reading of them."
+ ],
+ "deviations": "Two during A2 training, both caught before any metric was computed. See PREREGISTRATION_A2.md.",
+ "reproduce": [
+  "python3 validate_layer.py --model {a,a2} --layer {0..3} --sae-steps 40000 --seeds 3",
+  "python3 bootstrap_prep.py --model {a,a2} --layer {0..3} --seeds 3",
+  "python3 bootstrap_ci.py --reps 5000"
+ ]
+}

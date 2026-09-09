@@ -1,0 +1,42 @@
+A_ind  165,120 params  2L x 4H x 128d  attention-only  mps
+periods: train 40-60 minus [45, 55], held out [45, 55]
+
+   2,500  loss 4.8522   first-occurrence 4.8521   repeated 4.8520   ratio 1.000   47s
+   5,000  loss 4.8521   first-occurrence 4.8521   repeated 4.8521   ratio 1.000   94s
+   7,500  loss 4.8519   first-occurrence 4.8520   repeated 4.8520   ratio 1.000   141s
+  10,000  loss 4.8523   first-occurrence 4.8520   repeated 4.8520   ratio 1.000   191s
+  12,500  loss 4.8519   first-occurrence 4.8517   repeated 4.8518   ratio 1.000   242s
+  15,000  loss 4.8251   first-occurrence 4.8518   repeated 4.7891   ratio 0.987   293s
+  17,500  loss 4.7382   first-occurrence 4.8526   repeated 4.5720   ratio 0.942   345s
+  20,000  loss 4.6034   first-occurrence 4.8525   repeated 4.2147   ratio 0.869   398s
+  22,500  loss 4.5025   first-occurrence 4.8548   repeated 3.9258   ratio 0.809   450s
+  25,000  loss 4.3704   first-occurrence 4.8553   repeated 3.5510   ratio 0.731   502s
+  27,500  loss 4.2905   first-occurrence 4.8545   repeated 3.3972   ratio 0.700   554s
+  30,000  loss 4.2523   first-occurrence 4.8545   repeated 3.3031   ratio 0.680   606s
+  32,500  loss 4.1712   first-occurrence 4.8534   repeated 3.1278   ratio 0.644   661s
+  35,000  loss 4.1658   first-occurrence 4.8532   repeated 3.0977   ratio 0.638   713s
+  37,500  loss 4.1435   first-occurrence 4.8536   repeated 3.0100   ratio 0.620   766s
+  40,000  loss 4.1175   first-occurrence 4.8540   repeated 2.9970   ratio 0.617   818s
+
+==================================================================
+VALIDITY PRECONDITION (fixed before training)
+  1. repeated < 0.5 x first-occurrence : 2.9724 < 2.4270   FAIL
+  3. held-out L within 1.25x           : 2.9390 < 3.7155   PASS
+
+GROUND TRUTH (computed before B is run, never adjusted)
+        head   prev-token score   induction score
+        L0H0             0.1008                 -
+        L0H1             0.0554                 -
+        L0H2             0.0482                 -
+        L0H3             0.0354                 -
+        L1H0                  -            0.0000
+        L1H1                  -            0.0081
+        L1H2                  -            0.0108
+        L1H3                  -            0.0001
+
+  C = []   |C| = 0
+  2. |C|>=2 with one per layer          : FAIL
+  chance level for precision@2          : C(0,2)/28 = 0.0%
+
+  PRECONDITION: VOID
+  -> findings/v5_groundtruth.json

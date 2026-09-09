@@ -1,0 +1,32 @@
+{
+ "milestone": "V3",
+ "frozen": "2026-09-07",
+ "A": {
+  "step": 83750,
+  "val": 1.0535639435052873,
+  "params": 819968,
+  "layers": 4,
+  "heads": 4,
+  "d": 128,
+  "vocab": 96
+ },
+ "B": {
+  "sae_step": 362500,
+  "features": 1024,
+  "layer": 2,
+  "recon_err": 0.153,
+  "l0": 15.4
+ },
+ "headline": {
+  "discovery_x_random": 12.45,
+  "calib_slope": 1.089,
+  "r2": 0.12,
+  "config": "mag80 acquisition + log-magnitude target",
+  "best_discovery_x_random": 18.01,
+  "best_discovery_config": "pure magnitude, uncalibrated"
+ },
+ "reproduce": [
+  "python3 harvest.py",
+  "python3 v3_discovery.py --acq random,magnitude,mag80 --target log"
+ ]
+}

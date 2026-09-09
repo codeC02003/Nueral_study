@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neural Anatomy</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap">
+<style>
+:root{
+  --void:#04070D; --panel:#080F18; --panel2:#0C1622;
+  --arc:#3DF0FF; --arc-dim:#1A6E80; --arc-ghost:#0E3540;
+  --gold:#FFAE29; --gold-dim:#7A5414; --gold-ghost:#3A2708;
+  --ink:#BEE9F3; --ink-dim:#5D8C9A; --ink-faint:#2E4C57;
+  --mono:"Share Tech Mono",ui-monospace,monospace;
+  --disp:"Rajdhani",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--void); color:var(--ink); font-family:var(--disp); font-size:14px;
+  background-image:linear-gradient(rgba(61,240,255,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(61,240,255,.05) 1px,transparent 1px);
+  background-size:46px 46px;
+}
+.shell{max-width:1560px; margin:0 auto; padding:18px 20px 46px; display:flex; flex-direction:column; gap:13px}
+
+header{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  border-bottom:1px solid var(--arc-ghost); padding-bottom:11px}
+h1{margin:0; font-size:29px; font-weight:700; letter-spacing:.17em; text-transform:uppercase;
+  color:var(--arc); text-shadow:0 0 16px rgba(61,240,255,.4); line-height:1}
+.tagline{margin:5px 0 0; font-family:var(--mono); font-size:11px; color:var(--ink-dim); letter-spacing:.05em}
+.badges{display:flex; gap:8px; flex-wrap:wrap}
+.badge{font-family:var(--mono); font-size:10px; letter-spacing:.1em; padding:5px 9px;
+  border:1px solid var(--arc-dim); color:var(--arc); text-transform:uppercase; white-space:nowrap}
+.badge.live{border-color:var(--gold); color:var(--gold)}
+.badge.live::before{content:"\25CF  "; animation:pulse 1.5s ease-in-out infinite}
+.badge.off{border-color:var(--ink-faint); color:var(--ink-faint)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ===== the two networks, unmistakably separate ===== */
+.net{position:relative; border:1px solid var(--arc-dim);
+  background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%)}
+.net.b{border-color:var(--gold-dim)}
+.net::before,.net::after{content:""; position:absolute; width:15px; height:15px; pointer-events:none}
+.net::before{top:-1px; left:-1px; border-top:2px solid var(--arc); border-left:2px solid var(--arc)}
+.net::after{bottom:-1px; right:-1px; border-bottom:2px solid var(--arc); border-right:2px solid var(--arc)}
+.net.b::before{border-color:var(--gold)} .net.b::after{border-color:var(--gold)}
+
+.net > .bar{display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:9px 15px; border-bottom:1px solid var(--arc-ghost); background:rgba(61,240,255,.045)}
+.net.b > .bar{border-bottom-color:var(--gold-ghost); background:rgba(255,174,41,.05)}
+.net .who{font-size:17px; font-weight:700; letter-spacing:.19em; text-transform:uppercase; color:var(--arc)}
+.net.b .who{color:var(--gold)}
+.net .role{font-family:var(--mono); font-size:10.5px; letter-spacing:.11em; color:var(--ink-dim); text-transform:uppercase}
+.net .stats{margin-left:auto; display:flex; gap:17px; flex-wrap:wrap}
+.stat{display:flex; flex-direction:column; line-height:1.25}
+.stat b{font-family:var(--mono); font-size:15px; color:var(--arc); font-weight:400}
+.net.b .stat b{color:var(--gold)}
+.stat span{font-family:var(--mono); font-size:8.5px; letter-spacing:.12em; color:var(--ink-faint); text-transform:uppercase}
+.net .body{padding:8px 6px 10px; overflow-x:auto}
+canvas{display:block; width:100%; height:auto}
+
+/* ===== the tap ===== */
+.tap{display:flex; align-items:center; gap:13px; padding:0 24px; font-family:var(--mono);
+  font-size:10.5px; letter-spacing:.11em; color:var(--gold); text-transform:uppercase}
+.tap .line{flex:0 0 2px; height:26px; background:linear-gradient(var(--arc),var(--gold))}
+.tap .arrow{color:var(--gold); font-size:15px}
+
+/* ===== strip / controls / findings ===== */
+.panel{position:relative; border:1px solid var(--arc-ghost);
+  background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%); padding:13px 15px}
+.panel h2{margin:0 0 9px; font-size:11.5px; letter-spacing:.19em; text-transform:uppercase;
+  color:var(--ink-dim); font-weight:600}
+.panel h2 em{font-style:normal; font-family:var(--mono); font-size:9.5px; color:var(--arc-dim); letter-spacing:.07em}
+.toks{display:flex; gap:2px; overflow-x:auto; padding-bottom:3px}
+.tok{flex:0 0 auto; min-width:22px; text-align:center; font-family:var(--mono); font-size:13px;
+  text-transform:none;   /* the global button rule uppercases; input is case-sensitive */
+  padding:5px 3px; border:1px solid var(--arc-ghost); color:var(--ink-dim); cursor:pointer;
+  background:transparent; white-space:pre}
+.tok:hover{border-color:var(--arc-dim); color:var(--ink)}
+.tok.on{border-color:var(--gold); color:var(--gold); background:rgba(255,174,41,.11);
+  box-shadow:0 0 12px rgba(255,174,41,.26)}
+.pred{display:flex; gap:13px; flex-wrap:wrap; align-items:baseline; font-family:var(--mono); font-size:12px; margin-top:8px}
+.pred b{color:var(--ink-dim); font-weight:400; letter-spacing:.11em; font-size:9.5px; text-transform:uppercase}
+.pred .p{color:var(--arc)} .pred .p em{font-style:normal; color:var(--ink-faint)}
+.pred .hit{color:var(--gold)}
+.ctl{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+button{font-family:var(--mono); font-size:10.5px; letter-spacing:.11em; text-transform:uppercase;
+  background:transparent; color:var(--arc); border:1px solid var(--arc-dim); padding:7px 14px; cursor:pointer}
+button:hover{background:rgba(61,240,255,.1)}
+button[aria-pressed=true]{background:var(--arc); color:var(--void); border-color:var(--arc); font-weight:700}
+button:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.heads{display:flex; gap:3px; flex-wrap:wrap}
+.heads button{padding:5px 8px; font-size:9.5px; letter-spacing:.04em}
+.ctl label{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; color:var(--ink-faint);
+  text-transform:uppercase; display:flex; align-items:center; gap:7px}
+input[type=range]{accent-color:var(--arc); width:100px}
+.probe{position:fixed; pointer-events:none; z-index:60; font-family:var(--mono); font-size:11px;
+  background:#04070Dee; border:1px solid var(--arc); color:var(--ink); padding:6px 9px;
+  white-space:pre; display:none; box-shadow:0 0 18px rgba(61,240,255,.3)}
+.two{display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:13px; align-items:start}
+@media (max-width:980px){ .two{grid-template-columns:1fr} }
+.finds{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:9px}
+.find{border:1px solid var(--arc-ghost); padding:9px 11px; background:rgba(8,15,24,.55)}
+.find .fid{font-family:var(--mono); font-size:10px; color:var(--gold); letter-spacing:.1em; margin-bottom:5px}
+.find .ctx{font-family:var(--mono); font-size:10.5px; color:var(--ink-dim); white-space:pre-wrap;
+  word-break:break-all; line-height:1.6}
+footer{font-family:var(--mono); font-size:10px; color:var(--ink-faint); letter-spacing:.04em;
+  border-top:1px solid var(--arc-ghost); padding-top:11px; line-height:1.9}
+footer b{color:var(--arc); font-weight:400}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div><h1>Neural Anatomy</h1><p class="tagline" id="tagline"></p></div>
+    <div class="badges" id="badges"></div>
+  </header>
+
+  <!-- ============ NETWORK A ============ -->
+  <section class="net a">
+    <div class="bar">
+      <span class="who">Network A</span>
+      <span class="role">the subject &middot; learns Python</span>
+      <div class="stats" id="a-stats"></div>
+    </div>
+    <div class="body"><canvas id="cvA"></canvas></div>
+  </section>
+
+  <div class="tap">
+    <span class="line"></span><span class="arrow">&#9660;</span>
+    <span id="tap-label"></span>
+  </div>
+
+  <!-- ============ NETWORK B ============ -->
+  <section class="net b">
+    <div class="bar">
+      <span class="who">Network B</span>
+      <span class="role">the anatomist &middot; learns A</span>
+      <div class="stats" id="b-stats"></div>
+    </div>
+    <div class="body"><canvas id="cvB"></canvas></div>
+  </section>
+
+  <!-- ============ input + attention ============ -->
+  <div class="two">
+    <section class="panel">
+      <h2>Input stream <em>&mdash; a real snippet from the corpus</em></h2>
+      <div class="toks" id="toks"></div>
+      <div class="pred" id="pred"></div>
+    </section>
+    <section class="panel">
+      <h2>Attention <em>&mdash; who reads whom</em></h2>
+      <canvas id="cvT"></canvas>
+      <div style="font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.08em;margin-top:6px" id="attcap"></div>
+    </section>
+  </div>
+
+  <section class="panel ctl">
+    <button id="play" aria-pressed="true">&#9724; pause</button>
+    <button id="prev">&lsaquo; prev</button>
+    <button id="next">next &rsaquo;</button>
+    <label>speed <input type="range" id="speed" min="1" max="30" value="8"></label>
+    <label style="margin-left:auto">attn head</label>
+    <div class="heads" id="heads"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Features B discovered <em>&mdash; unsupervised &middot; nobody labelled these</em></h2>
+    <div class="finds" id="finds"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+<div class="probe" id="probe"></div>
+
+<script>
+const D = /*__DATA__*/;
+const S = D.status, C = D.cfg, T = D.tokens.length;
+const NL = C.n_layer, NH = C.n_head, NE = C.n_embd, NM = C.d_mlp, NV = C.vocab_size;
+let cur = T - 1, head = 0, spd = 8, tick = 0;
+let playing = !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+const q = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+const glyph = c => c === " " ? "␣" : c === "\n" ? "\\n" : esc(c);
+
+/* ---------------- header + stat bars ---------------- */
+q("tagline").textContent =
+  `A: ${NL} layers × ${NH} heads × ${NE} dims · ${C.neurons.toLocaleString()} neurons · `
++ `${C.params.toLocaleString()} weights    //    B: sparse autoencoder, `
++ `${(D.b.info?D.b.info.d_hidden:0).toLocaleString()} feature neurons on A layer ${D.b.layer}`;
+q("badges").innerHTML =
+  `<span class="badge ${S.a_alive?"live":"off"}">A ${S.a_alive?"training":"idle"}</span>`
++ `<span class="badge ${S.b_alive?"live":"off"}">B ${S.b_alive?"reading":"idle"}</span>`
++ `<span class="badge">${S.device.toUpperCase()}</span>`
++ `<span class="badge">local</span>`;
+const stat = (v,l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+q("a-stats").innerHTML =
+    stat(C.neurons.toLocaleString(), "neurons")
+  + stat(S.a_step ? S.a_step.toLocaleString() : "—", "train step")
+  + stat(S.a_loss ? S.a_loss.toFixed(4) : "—", "loss")
+  + stat(S.a_bpc ? S.a_bpc.toFixed(3) : "—", "bits/char")
+  + stat(S.a_ips ? S.a_ips.toFixed(1) : "—", "it/s");
+q("b-stats").innerHTML =
+    stat((D.b.info?D.b.info.d_hidden:0).toLocaleString(), "feature neurons")
+  + stat(S.b_step ? S.b_step.toLocaleString() : "—", "train step")
+  + stat(S.b_fvu != null ? (S.b_fvu*100).toFixed(1)+"%" : "—", "unexplained")
+  + stat(S.b_l0 != null ? S.b_l0.toFixed(1) : "—", "firing/token")
+  + stat(S.b_dead != null ? S.b_dead : "—", "never fire");
+q("tap-label").textContent =
+  `B taps A here: layer ${D.b.layer} residual stream · ${NE} numbers per position · detached, so B cannot alter A`;
+
+/* ---------------- strip layout of A ----------------
+   Every row below is a real population of neurons, not a diagram. Bottom to top
+   is the order the data actually flows.                                       */
+const STRIPS = [];
+STRIPS.push({key:"out", label:"OUTPUT", sub:NV+" vocab", rows:1, n:NV, kind:"out", layer:null});
+for(let L = NL-1; L >= 0; L--){
+  STRIPS.push({key:`r${L}`, label:`L${L} RESID`, sub:NE+" neurons", rows:1, n:NE, kind:"resid", layer:L});
+  STRIPS.push({key:`m${L}`, label:`L${L} MLP`,   sub:NM+" neurons", rows:2, n:NM, kind:"mlp",   layer:L});
+  STRIPS.push({key:`a${L}`, label:`L${L} ATTN`, sub:NH+" heads \u00D7 "+T+" pos",
+               rows:NH, n:NH*T, kind:"attn", layer:L});
+}
+STRIPS.push({key:"emb", label:"EMBED", sub:NE+" neurons", rows:1, n:NE, kind:"embed", layer:null});
+
+const GUT = 118, PADR = 16, PADT = 8, ROWH = 13, SGAP = 7, BGAP = 5;
+function stripVals(s, t){
+  if(s.kind === "out")   return D.a.out[t];
+  if(s.kind === "embed") return D.a.embed[t];
+  if(s.kind === "resid") return D.a.layers[s.layer].resid[t];
+  if(s.kind === "mlp")   return D.a.layers[s.layer].mlp[t];
+  if(s.kind === "attn"){
+    // one row per head; within a row, how strongly that head reads each position
+    const at = D.a.layers[s.layer].attn, o = [];
+    for(let h=0; h<NH; h++) for(let j=0; j<T; j++) o.push(at[h][t][j]);
+    return o;
+  }
+  return [];
+}
+// One normaliser per strip, computed over the whole probe, so that scanning
+// shows genuine change rather than each frame being rescaled to itself.
+STRIPS.forEach(s => {
+  let mx = 0;
+  for(let t=0; t<T; t++) for(const v of stripVals(s,t)) { const a = Math.abs(v); if(a>mx) mx=a; }
+  s.max = mx || 1;
+});
+
+const cvA = q("cvA"), ctxA = cvA.getContext("2d");
+let LAY = null;
+function layoutA(){
+  const W = Math.max(1180, cvA.parentElement.clientWidth - 12);
+  let y = PADT; const rows = [];
+  STRIPS.forEach(s => {
+    rows.push({s, y, h: s.rows*ROWH});
+    y += s.rows*ROWH + (s.kind === "attn" ? BGAP + SGAP : SGAP);
+  });
+  const H = y + 6;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cvA.width = W*dpr; cvA.height = H*dpr; cvA.style.height = H + "px";
+  ctxA.setTransform(dpr,0,0,dpr,0,0);
+  LAY = {W, H, rows};
+}
+
+function cellGeom(s, W){
+  const perRow = Math.ceil(s.n / s.rows);
+  const w = (W - GUT - PADR) / perRow;
+  return {perRow, w};
+}
+
+function drawA(){
+  if(!LAY) layoutA();
+  const {W, H, rows} = LAY;
+  ctxA.clearRect(0,0,W,H);
+  rows.forEach(({s, y, h}) => {
+    const {perRow, w} = cellGeom(s, W);
+    const vals = stripVals(s, cur);
+    const tapped = (s.kind === "resid" && s.layer === D.b.layer);
+    // label gutter
+    ctxA.textAlign = "right"; ctxA.textBaseline = "middle";
+    ctxA.font = '600 10.5px Rajdhani, sans-serif';
+    ctxA.fillStyle = tapped ? "#FFAE29" : "#7FB3C0";
+    ctxA.fillText(s.label, GUT - 44, y + h/2 - 4);
+    ctxA.font = '400 8.5px "Share Tech Mono", monospace';
+    ctxA.fillStyle = "#2E4C57";
+    ctxA.fillText(s.sub, GUT - 44, y + h/2 + 6);
+    if(tapped){
+      ctxA.fillStyle = "#FFAE29"; ctxA.textAlign = "left";
+      ctxA.font = '400 8px "Share Tech Mono", monospace';
+      ctxA.fillText("\u25B8 B", 6, y + h/2 + 1);
+    }
+    // neurons
+    for(let i=0; i<s.n; i++){
+      const r = Math.floor(i / perRow), c = i - r*perRow;
+      const v = vals[i] === undefined ? 0 : vals[i];
+      const a = Math.min(1, Math.abs(v) / s.max);
+      const x = GUT + c*w, yy = y + r*ROWH;
+      // negative activations read gold, positive cyan: sign is information
+      ctxA.fillStyle = a < .04 ? "rgba(61,240,255,.05)"
+        : (v < 0 ? `rgba(255,174,41,${(.16+a*.8).toFixed(3)})`
+                 : `rgba(61,240,255,${(.16+a*.84).toFixed(3)})`);
+      ctxA.fillRect(x, yy, Math.max(1, w-0.7), ROWH-1.6);
+    }
+    ctxA.strokeStyle = tapped ? "rgba(255,174,41,.5)" : "rgba(61,240,255,.13)";
+    ctxA.lineWidth = 1;
+    ctxA.strokeRect(GUT-.5, y-.5, W-GUT-PADR+1, h-.6);
+  });
+}
+
+/* ---------------- Network B's neurons ---------------- */
+const cvB = q("cvB"), ctxB = cvB.getContext("2d");
+const NB = D.b.info ? D.b.info.d_hidden : 0;
+const BROWS = 4;
+let LAYB = null;
+function layoutB(){
+  const W = Math.max(1180, cvB.parentElement.clientWidth - 12);
+  const H = PADT + BROWS*ROWH + 16;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cvB.width = W*dpr; cvB.height = H*dpr; cvB.style.height = H + "px";
+  ctxB.setTransform(dpr,0,0,dpr,0,0);
+  LAYB = {W, H, perRow: Math.ceil(NB/BROWS), w: (W-GUT-PADR)/Math.ceil(NB/BROWS)};
+}
+function drawB(){
+  if(!LAYB) layoutB();
+  const {W,H,perRow,w} = LAYB;
+  ctxB.clearRect(0,0,W,H);
+  const act = D.b.act ? (D.b.act[cur] || []) : [];
+  const map = new Map(act);
+  const mx = Math.max(.001, ...act.map(a=>a[1]));
+  ctxB.textAlign = "right"; ctxB.textBaseline = "middle";
+  ctxB.font = '600 10.5px Rajdhani, sans-serif'; ctxB.fillStyle = "#FFAE29";
+  ctxB.fillText("FEATURES", GUT-44, PADT + BROWS*ROWH/2 - 4);
+  ctxB.font = '400 8.5px "Share Tech Mono", monospace'; ctxB.fillStyle = "#2E4C57";
+  ctxB.fillText(NB + " neurons", GUT-44, PADT + BROWS*ROWH/2 + 6);
+  for(let i=0;i<NB;i++){
+    const r = Math.floor(i/perRow), c = i - r*perRow;
+    const v = map.get(i);
+    ctxB.fillStyle = v === undefined ? "rgba(255,174,41,.055)"
+      : `rgba(255,174,41,${(.35+.65*(v/mx)).toFixed(3)})`;
+    ctxB.fillRect(GUT + c*w, PADT + r*ROWH, Math.max(1, w-0.7), ROWH-1.6);
+  }
+  ctxB.strokeStyle = "rgba(255,174,41,.4)"; ctxB.lineWidth = 1;
+  ctxB.strokeRect(GUT-.5, PADT-.5, W-GUT-PADR+1, BROWS*ROWH-.6);
+  ctxB.textAlign = "left"; ctxB.font = '400 9.5px "Share Tech Mono", monospace';
+  ctxB.fillStyle = "#5D8C9A";
+  ctxB.fillText(`${act.length} of ${NB} firing at position ${cur}  ·  the other ${NB-act.length} are silent`,
+                GUT, PADT + BROWS*ROWH + 9);
+}
+
+/* ---------------- attention matrix ---------------- */
+const cvT = q("cvT"), ctxT = cvT.getContext("2d");
+function drawT(){
+  const W = Math.max(240, cvT.parentElement.clientWidth - 30), H = W;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cvT.width = W*dpr; cvT.height = H*dpr; cvT.style.height = H+"px";
+  ctxT.setTransform(dpr,0,0,dpr,0,0);
+  ctxT.clearRect(0,0,W,H);
+  const L = Math.floor(head/NH), h = head % NH;
+  const M = D.a.layers[L].attn[h], c = W/T;
+  for(let i=0;i<T;i++) for(let j=0;j<T;j++){
+    const v = M[i][j];
+    if(v > .002){
+      ctxT.fillStyle = `rgba(61,240,255,${Math.min(1,v*2.2).toFixed(3)})`;
+      ctxT.fillRect(j*c, i*c, c-.4, c-.4);
+    }
+  }
+  ctxT.fillStyle = "rgba(255,174,41,.2)"; ctxT.fillRect(0, cur*c, W, c);
+  ctxT.strokeStyle = "rgba(255,174,41,.85)"; ctxT.lineWidth = 1;
+  ctxT.strokeRect(.5, cur*c+.5, W-1, c-1);
+  q("attcap").textContent =
+    `L${L}H${h}  ·  row = position doing the reading, column = position being read`
+    + `  ·  entropy ${D.a.layers[L].attn_entropy[h].toFixed(2)} nats`;
+}
+
+/* ---------------- hover: name the neuron ---------------- */
+const probe = q("probe");
+cvA.addEventListener("mousemove", e => {
+  if(!LAY) return;
+  const rect = cvA.getBoundingClientRect();
+  const sx = LAY.W / rect.width;
+  const x = (e.clientX - rect.left)*sx, y = (e.clientY - rect.top)*sx;
+  for(const {s, y:sy, h} of LAY.rows){
+    if(y >= sy && y < sy + h){
+      const {perRow, w} = cellGeom(s, LAY.W);
+      const c = Math.floor((x - GUT)/w), r = Math.floor((y - sy)/ROWH);
+      const i = r*perRow + c;
+      if(c < 0 || i < 0 || i >= s.n) break;
+      const v = stripVals(s, cur)[i];
+      const name = s.kind === "out" ? `predicts "${glyph(D.vocab[i])}"`
+                 : s.kind === "attn" ? `head ${r} reading pos ${c} ("${glyph(D.tokens[c])}")`
+                 : `#${i}`;
+      probe.style.display = "block";
+      probe.style.left = (e.clientX + 14) + "px";
+      probe.style.top  = (e.clientY - 8) + "px";
+      probe.textContent = `${s.label}  ${name}\nactivation ${v === undefined ? "-" : v.toFixed(4)}`
+        + `\nat position ${cur} ("${glyph(D.tokens[cur])}")`;
+      return;
+    }
+  }
+  probe.style.display = "none";
+});
+cvA.addEventListener("mouseleave", () => probe.style.display = "none");
+cvB.addEventListener("mousemove", e => {
+  if(!LAYB) return;
+  const rect = cvB.getBoundingClientRect(), sx = LAYB.W/rect.width;
+  const x = (e.clientX-rect.left)*sx, y = (e.clientY-rect.top)*sx;
+  const c = Math.floor((x-GUT)/LAYB.w), r = Math.floor((y-PADT)/ROWH);
+  const i = r*LAYB.perRow + c;
+  if(c < 0 || r < 0 || r >= BROWS || i < 0 || i >= NB){ probe.style.display="none"; return; }
+  const m = new Map(D.b.act ? (D.b.act[cur]||[]) : []);
+  probe.style.display = "block";
+  probe.style.left = (e.clientX+14)+"px"; probe.style.top = (e.clientY-8)+"px";
+  probe.textContent = `B FEATURE #${i}\n` + (m.has(i) ? `firing at ${m.get(i).toFixed(4)}` : "silent");
+});
+cvB.addEventListener("mouseleave", () => probe.style.display = "none");
+
+/* ---------------- token strip, heads, findings ---------------- */
+const toks = q("toks");
+D.tokens.forEach((ch,i)=>{
+  const b = document.createElement("button");
+  b.className = "tok"; b.textContent = ch === " " ? "␣" : ch;
+  b.onclick = () => { cur = i; playing = false; sync(); render(); };
+  toks.appendChild(b);
+});
+const heads = q("heads");
+for(let L=0;L<NL;L++) for(let h=0;h<NH;h++){
+  const b = document.createElement("button");
+  b.textContent = `L${L}H${h}`; b.dataset.i = L*NH+h;
+  b.setAttribute("aria-pressed", L*NH+h === 0);
+  b.onclick = () => { head = L*NH+h;
+    [...heads.children].forEach(x => x.setAttribute("aria-pressed", +x.dataset.i === head));
+    render(); };
+  heads.appendChild(b);
+}
+q("finds").innerHTML = (D.b.features||[]).slice(0,8).map(f=>`
+  <div class="find"><div class="fid">FEATURE ${String(f.feature).padStart(4,"0")} · peak ${f.max_act.toFixed(2)}</div>
+  <div class="ctx">${f.contexts.slice(0,4).map(c=>"› "+esc(c.slice(-24))).join("\n")}</div></div>`).join("");
+q("foot").innerHTML =
+  `SNAPSHOT ${new Date(D.captured*1000).toLocaleString()} · running entirely on this machine · no network calls except the webfont<br>`
++ `Every cell is one real neuron's measured activation. Cyan = positive, gold = negative. Hover any cell to name it.<br>`
++ `refresh with newer training: <b>./viz/serve.sh</b>`;
+
+/* ---------------- loop ---------------- */
+function render(){ drawA(); drawB(); drawT();
+  [...toks.children].forEach((el,i)=>el.classList.toggle("on", i===cur));
+  const p = D.a.out[cur], truth = D.tokens[cur+1];
+  const top = p.map((v,i)=>[i,v]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  q("pred").innerHTML = `<b>A believes next:</b> ` + top.map(([i,v])=>
+    `<span class="p ${D.vocab[i]===truth?"hit":""}">${glyph(D.vocab[i])}<em> ${(v*100).toFixed(1)}%</em></span>`).join("")
+    + (truth!==undefined ? `<b style="margin-left:6px">actual</b><span class="p hit">${glyph(truth)}</span>` : "");
+}
+function sync(){ const b=q("play"); b.setAttribute("aria-pressed", playing);
+  b.innerHTML = playing ? "&#9724; pause" : "&#9654; run"; }
+q("play").onclick = () => { playing = !playing; sync(); };
+q("next").onclick = () => { playing=false; sync(); cur=(cur+1)%T; render(); };
+q("prev").onclick = () => { playing=false; sync(); cur=(cur-1+T)%T; render(); };
+q("speed").oninput = e => spd = +e.target.value;
+addEventListener("keydown", e => {
+  if(e.key==="ArrowRight"){ playing=false; sync(); cur=(cur+1)%T; render(); }
+  if(e.key==="ArrowLeft"){ playing=false; sync(); cur=(cur-1+T)%T; render(); }
+  if(e.key===" "){ e.preventDefault(); playing=!playing; sync(); }
+});
+addEventListener("resize", () => { layoutA(); layoutB(); render(); });
+function loop(){ tick++;
+  if(playing && tick % Math.max(1, 32-spd) === 0){ cur=(cur+1)%T; render(); }
+  requestAnimationFrame(loop); }
+layoutA(); layoutB(); sync(); render(); loop();
+</script>
+</body>
+</html>

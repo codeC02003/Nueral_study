@@ -1,0 +1,410 @@
+<title>Backprop Microscope</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#F4F5F7; --surface:#FFFFFF; --sunken:#EAECF0;
+  --ink:#161A22; --ink-2:#3C4453; --muted:#6A7385; --line:#D6DAE2;
+  --wave:#C2410C; --wave-soft:#FDEDE3;
+  --neg:#0F766E; --pos:#B45309;
+  --leaf:#3D5A80; --root:#7C2D5A;
+  --focus:#2563EB;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1319; --surface:#171C24; --sunken:#11161D;
+    --ink:#E9ECF1; --ink-2:#C0C7D2; --muted:#8A93A3; --line:#2A323E;
+    --wave:#F97316; --wave-soft:#2A1B12;
+    --neg:#2DD4BF; --pos:#FBBF24;
+    --leaf:#7FA5CC; --root:#E28FBC;
+    --focus:#60A5FA;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1319; --surface:#171C24; --sunken:#11161D;
+  --ink:#E9ECF1; --ink-2:#C0C7D2; --muted:#8A93A3; --line:#2A323E;
+  --wave:#F97316; --wave-soft:#2A1B12;
+  --neg:#2DD4BF; --pos:#FBBF24;
+  --leaf:#7FA5CC; --root:#E28FBC;
+  --focus:#60A5FA;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:14px; line-height:1.55;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:28px 20px 56px; display:flex; flex-direction:column; gap:20px}
+
+/* ---- header ---- */
+header{display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--line); padding-bottom:18px}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted);
+}
+h1{margin:0; font-size:29px; font-weight:700; letter-spacing:-.02em; text-wrap:balance}
+.sub{margin:0; color:var(--ink-2); max-width:64ch}
+.expr{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px; color:var(--ink-2);
+  background:var(--sunken); border:1px solid var(--line); border-radius:5px;
+  padding:7px 11px; align-self:flex-start; margin-top:4px;
+}
+
+/* ---- controls ---- */
+.controls{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px 22px;
+  background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:16px 18px;
+}
+.ctl{display:flex; flex-direction:column; gap:6px}
+.ctl label{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); display:flex; justify-content:space-between; gap:8px;
+}
+.ctl label b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+input[type=range]{width:100%; accent-color:var(--wave); margin:0}
+.seg{display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden}
+.seg button{
+  flex:1; border:0; padding:7px 8px; background:var(--surface); color:var(--ink-2); cursor:pointer;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.05em;
+}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--wave); color:#fff; font-weight:600}
+.preset{
+  border:1px dashed var(--line); background:transparent; color:var(--ink-2); cursor:pointer;
+  border-radius:6px; padding:7px 10px; font-family:"IBM Plex Mono",monospace; font-size:11px;
+}
+.preset:hover{border-color:var(--wave); color:var(--wave)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+
+/* ---- stage ---- */
+.stage{
+  background:var(--surface); border:1px solid var(--line); border-radius:8px;
+  padding:10px 8px; overflow-x:auto;
+}
+svg{display:block; width:100%; min-width:820px; height:auto}
+.n-box{fill:var(--surface); stroke:var(--line); stroke-width:1.4}
+.n-box.leaf{stroke:var(--leaf)}
+.n-box.root{stroke:var(--root); stroke-width:2}
+.n-box.active{stroke:var(--wave); stroke-width:2.4; fill:var(--wave-soft)}
+.n-label{font-family:"IBM Plex Mono",monospace; font-size:10.5px; fill:var(--muted); letter-spacing:.06em}
+.n-val{font-family:"IBM Plex Sans",sans-serif; font-size:14.5px; font-weight:600; fill:var(--ink); font-variant-numeric:tabular-nums}
+.n-grad{font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-variant-numeric:tabular-nums}
+.n-grad.zero{fill:var(--muted); opacity:.5}
+.n-grad.neg{fill:var(--neg)} .n-grad.pos{fill:var(--pos)}
+.edge{fill:none; stroke:var(--line); stroke-width:1.5}
+.edge.flow{stroke:var(--wave); stroke-width:2.6; stroke-dasharray:6 5; animation:march .7s linear infinite}
+@keyframes march{to{stroke-dashoffset:22}}
+.axis-cap{font-family:"IBM Plex Mono",monospace; font-size:10px; fill:var(--muted); letter-spacing:.12em; text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){ .edge.flow{animation:none} }
+
+/* ---- transport ---- */
+.transport{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.transport button{
+  border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
+  border-radius:6px; padding:8px 15px; font-family:"IBM Plex Sans",sans-serif; font-size:13px; font-weight:500;
+}
+.transport button:hover:not(:disabled){border-color:var(--wave); color:var(--wave)}
+.transport button:disabled{opacity:.4; cursor:default}
+.transport button.primary{background:var(--wave); border-color:var(--wave); color:#fff; font-weight:600}
+.transport button.primary:hover{opacity:.9; color:#fff}
+.counter{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+.note{
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2); line-height:1.6;
+  background:var(--sunken); border-left:3px solid var(--wave); border-radius:0 5px 5px 0;
+  padding:11px 14px; min-height:44px;
+}
+
+/* ---- readout ---- */
+.readout{border:1px solid var(--line); border-radius:8px; background:var(--surface); overflow:hidden}
+.readout h2{
+  margin:0; padding:11px 16px; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); font-family:"IBM Plex Mono",monospace; font-weight:500;
+  border-bottom:1px solid var(--line); background:var(--sunken);
+}
+.rows{display:flex; flex-direction:column}
+.row{display:grid; grid-template-columns:58px 116px 1fr; align-items:center; gap:14px; padding:11px 16px}
+.row+.row{border-top:1px solid var(--line)}
+.row .k{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600; color:var(--ink)}
+.row .v{font-family:"IBM Plex Mono",monospace; font-size:13px; font-variant-numeric:tabular-nums; text-align:right}
+.row .v.neg{color:var(--neg)} .row .v.pos{color:var(--pos)} .row .v.zero{color:var(--muted); opacity:.6}
+.bar{height:8px; background:var(--sunken); border-radius:4px; position:relative; overflow:hidden}
+.bar i{position:absolute; top:0; bottom:0; left:50%; border-radius:2px; transition:width .3s ease, left .3s ease}
+.legend{
+  display:flex; gap:18px; flex-wrap:wrap; padding:10px 16px; border-top:1px solid var(--line);
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted);
+}
+.legend span{display:flex; align-items:center; gap:6px}
+.dot{width:9px; height:9px; border-radius:2px; display:inline-block}
+footer{color:var(--muted); font-size:12.5px; border-top:1px solid var(--line); padding-top:14px; max-width:70ch}
+footer code{font-family:"IBM Plex Mono",monospace; background:var(--sunken); padding:1px 5px; border-radius:3px; font-size:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Lesson 2 · Panel 1 of the microscope</div>
+    <h1>Backprop Microscope</h1>
+    <p class="sub">One neuron, differentiated. Drag the weights to rebuild the graph, then step the
+      backward sweep node by node and watch each gradient get filled in — right to left, one hop at a time.</p>
+    <div class="expr" id="expr"></div>
+  </header>
+
+  <section class="controls" aria-label="Model controls">
+    <div class="ctl">
+      <label for="w">w · weight <b id="w-val">0.30</b></label>
+      <input type="range" id="w" min="-4" max="4" step="0.05" value="0.3">
+    </div>
+    <div class="ctl">
+      <label for="x">x · "great" count <b id="x-val">3.0</b></label>
+      <input type="range" id="x" min="0" max="6" step="0.5" value="3">
+    </div>
+    <div class="ctl">
+      <label for="b">b · bias <b id="b-val">0.00</b></label>
+      <input type="range" id="b" min="-3" max="3" step="0.05" value="0">
+    </div>
+    <div class="ctl">
+      <label for="lossSeg">loss function</label>
+      <div class="seg" id="lossSeg">
+        <button data-loss="mse" aria-pressed="true">squared error</button>
+        <button data-loss="ce" aria-pressed="false">cross-entropy</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <label>demo</label>
+      <button class="preset" id="preset">set confidently wrong · w = −3</button>
+    </div>
+  </section>
+
+  <div class="stage"><svg id="graph" role="img" aria-label="Computation graph of a single neuron"></svg></div>
+
+  <div class="transport">
+    <button id="reset">Reset</button>
+    <button id="prev">‹ Back</button>
+    <button id="step" class="primary">Step ›</button>
+    <button id="play">Play sweep</button>
+    <span class="counter" id="counter"></span>
+  </div>
+  <div class="note" id="note"></div>
+
+  <section class="readout">
+    <h2>Gradients that matter — what the optimizer actually uses</h2>
+    <div class="rows" id="rows"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--neg)"></i> negative → push this knob UP</span>
+      <span><i class="dot" style="background:var(--pos)"></i> positive → push this knob DOWN</span>
+      <span><i class="dot" style="background:var(--muted)"></i> zero → not responsible</span>
+    </div>
+  </section>
+
+  <footer>
+    Mirrors <code>nn/engine.py</code> — the same <code>Value</code> class, reimplemented here in JavaScript so the graph
+    is live rather than a recording. Try cross-entropy with <code>w = −3</code>: squared error hands <code>w</code> a
+    gradient near zero while the model is maximally wrong, and cross-entropy hands it ≈ −3.
+  </footer>
+</div>
+
+<script>
+/* ---------- the engine, ported from nn/engine.py ---------- */
+class V {
+  constructor(data, prev = [], op = "", label = "") {
+    this.data = data; this.grad = 0; this.prev = prev; this.op = op; this.label = label;
+    this._back = () => {};
+  }
+  mul(o){ o = o instanceof V ? o : new V(o);
+    const out = new V(this.data*o.data, [this,o], "×");
+    out._back = () => { this.grad += o.data*out.grad; o.grad += this.data*out.grad; };
+    return out; }
+  add(o){ o = o instanceof V ? o : new V(o);
+    const out = new V(this.data+o.data, [this,o], "+");
+    out._back = () => { this.grad += out.grad; o.grad += out.grad; };
+    return out; }
+  sub(o){ const out = new V(this.data-o.data, [this,o], "−");
+    out._back = () => { this.grad += out.grad; o.grad -= out.grad; };
+    return out; }
+  pow(k){ const out = new V(Math.pow(this.data,k), [this], "^"+k);
+    out._back = () => { this.grad += k*Math.pow(this.data,k-1)*out.grad; };
+    return out; }
+  neg(){ const out = new V(-this.data, [this], "neg");
+    out._back = () => { this.grad -= out.grad; };
+    return out; }
+  log(){ const out = new V(Math.log(Math.max(this.data,1e-12)), [this], "log");
+    out._back = () => { this.grad += (1/Math.max(this.data,1e-12))*out.grad; };
+    return out; }
+  sigmoid(){ const s = 1/(1+Math.exp(-this.data));
+    const out = new V(s, [this], "σ");
+    out._back = () => { this.grad += s*(1-s)*out.grad; };
+    return out; }
+}
+
+/* ---------- build the graph for the current settings ---------- */
+let state = { w:0.3, x:3, b:0, loss:"mse", frame:0, frames:[], nodes:[], edges:[], playing:null };
+
+function build(){
+  const w = new V(state.w,[],"","w"), x = new V(state.x,[],"","x"),
+        b = new V(state.b,[],"","b"), y = new V(1,[],"","y");
+  const wx = w.mul(x);   wx.label = "w·x";
+  const z  = wx.add(b);  z.label  = "z";
+  const p  = z.sigmoid();p.label  = "p";
+  let L;
+  if (state.loss === "mse"){ const d = p.sub(y); d.label = "p−y"; L = d.pow(2); L.label = "L"; }
+  else { const lp = p.log(); lp.label = "log p"; L = lp.neg(); L.label = "L"; }
+
+  // topological sort: children before parents
+  const topo = [], seen = new Set();
+  (function go(v){ if(seen.has(v)) return; seen.add(v); v.prev.forEach(go); topo.push(v); })(L);
+  const idx = new Map(topo.map((v,i)=>[v,i]));
+
+  const depth = new Map();
+  topo.forEach(v => depth.set(v, v.prev.length ? 1+Math.max(...v.prev.map(c=>depth.get(c))) : 0));
+
+  const nodes = topo.map((v,i)=>({
+    i, label: v.label || v.op, op: v.op, data: v.data,
+    isLeaf: v.prev.length===0, isRoot: v===L, depth: depth.get(v),
+    kids: v.prev.map(c=>idx.get(c)),
+  }));
+  const edges = [];
+  topo.forEach(v => v.prev.forEach(c => edges.push({from: idx.get(c), to: idx.get(v)})));
+
+  // record the sweep, frame by frame
+  topo.forEach(v => v.grad = 0);
+  const frames = [{ active:null, grads: topo.map(v=>v.grad),
+    note:"All gradients start at 0 — nothing is yet known to affect L." }];
+  L.grad = 1;
+  frames.push({ active: idx.get(L), grads: topo.map(v=>v.grad),
+    note:"SEED  dL/dL = 1.  \"If L rises by 1, L rises by 1.\" The only fact the sweep needs to begin." });
+  for (let k = topo.length-1; k >= 0; k--){
+    const v = topo[k]; v._back();
+    const kids = v.prev.map(c=>c.label||c.op).join(", ");
+    frames.push({ active: idx.get(v), grads: topo.map(n=>n.grad),
+      note: v.prev.length
+        ? `"${v.label||v.op}" pushes its gradient down to → ${kids}`
+        : `"${v.label||v.op}" is a leaf — an input or a parameter. Nothing below it. Its gradient is final.` });
+  }
+  Object.assign(state, {nodes, edges, frames});
+  document.getElementById("expr").textContent = state.loss === "mse"
+    ? "L = ( σ(w·x + b) − y )²        y = 1"
+    : "L = − log σ(w·x + b)          y = 1";
+}
+
+/* ---------- render ---------- */
+const NW = 104, NH = 66, COLGAP = 148, ROWGAP = 16, PADX = 26, PADY = 40;
+const fmt = g => (Math.abs(g) < 5e-6 ? "0" : (Math.abs(g) >= 1000 || (Math.abs(g) < 0.001)
+  ? g.toExponential(1) : g.toFixed(4)));
+
+function render(){
+  const f = state.frames[state.frame];
+  const byDepth = new Map();
+  state.nodes.forEach(n => { if(!byDepth.has(n.depth)) byDepth.set(n.depth,[]); byDepth.get(n.depth).push(n); });
+  const maxRows = Math.max(...[...byDepth.values()].map(a=>a.length));
+  const H = PADY*2 + maxRows*NH + (maxRows-1)*ROWGAP;
+  const cols = Math.max(...byDepth.keys()) + 1;
+  const W = PADX*2 + cols*NW + (cols-1)*(COLGAP-NW);
+
+  const pos = new Map();
+  byDepth.forEach((arr, d) => {
+    const totalH = arr.length*NH + (arr.length-1)*ROWGAP;
+    arr.forEach((n,r) => pos.set(n.i, {
+      x: PADX + d*COLGAP,
+      y: (H - totalH)/2 + r*(NH+ROWGAP)
+    }));
+  });
+
+  const activeNode = f.active === null ? null : state.nodes[f.active];
+  const flowing = new Set(activeNode ? activeNode.kids.map(k => `${k}->${activeNode.i}`) : []);
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+  svg += `<text class="axis-cap" x="${PADX}" y="18">inputs &amp; parameters</text>`;
+  svg += `<text class="axis-cap" x="${W-PADX}" y="18" text-anchor="end">loss</text>`;
+
+  state.edges.forEach(e => {
+    const a = pos.get(e.from), b2 = pos.get(e.to);
+    const x1 = a.x+NW, y1 = a.y+NH/2, x2 = b2.x, y2 = b2.y+NH/2, mx = (x1+x2)/2;
+    const on = flowing.has(`${e.from}->${e.to}`);
+    svg += `<path class="edge${on?" flow":""}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
+  });
+
+  state.nodes.forEach(n => {
+    const p = pos.get(n.i), g = f.grads[n.i];
+    const cls = n.i === f.active ? "active" : (n.isRoot ? "root" : n.isLeaf ? "leaf" : "");
+    const gc = Math.abs(g) < 5e-6 ? "zero" : (g < 0 ? "neg" : "pos");
+    svg += `<g>
+      <rect class="n-box ${cls}" x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="6"/>
+      <text class="n-label" x="${p.x+10}" y="${p.y+17}">${n.label}</text>
+      <text class="n-val"   x="${p.x+10}" y="${p.y+38}">${n.data.toFixed(4)}</text>
+      <text class="n-grad ${gc}" x="${p.x+10}" y="${p.y+55}">∇ ${fmt(g)}</text>
+    </g>`;
+  });
+  svg += `</svg>`;
+  document.getElementById("graph").outerHTML = svg;
+  document.querySelector("svg").id = "graph";
+
+  document.getElementById("note").textContent = f.note;
+  document.getElementById("counter").textContent =
+    `step ${state.frame} / ${state.frames.length-1}`;
+  document.getElementById("prev").disabled = state.frame === 0;
+  document.getElementById("step").disabled = state.frame === state.frames.length-1;
+
+  // readout
+  const finals = state.frames[state.frame].grads;
+  const want = ["w","b","x"];
+  const rows = want.map(lbl => {
+    const n = state.nodes.find(nn => nn.label === lbl);
+    return {lbl, g: n ? finals[n.i] : 0};
+  });
+  const mx2 = Math.max(1e-9, ...rows.map(r=>Math.abs(r.g)));
+  document.getElementById("rows").innerHTML = rows.map(r => {
+    const cls = Math.abs(r.g) < 5e-6 ? "zero" : (r.g < 0 ? "neg" : "pos");
+    const pct = Math.abs(r.g)/mx2*50;
+    const col = cls==="neg" ? "var(--neg)" : cls==="pos" ? "var(--pos)" : "var(--muted)";
+    return `<div class="row">
+      <span class="k">dL/d${r.lbl}</span>
+      <span class="v ${cls}">${fmt(r.g)}</span>
+      <span class="bar"><i style="background:${col};width:${pct}%;left:${r.g<0?50-pct:50}%"></i></span>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- wiring ---------- */
+function rebuild(toEnd = true){
+  build();
+  state.frame = toEnd ? state.frames.length-1 : 0;
+  render();
+}
+["w","x","b"].forEach(k => {
+  const el = document.getElementById(k);
+  el.addEventListener("input", () => {
+    state[k] = parseFloat(el.value);
+    document.getElementById(k+"-val").textContent = state[k].toFixed(k==="x"?1:2);
+    stopPlay(); rebuild(true);
+  });
+});
+document.getElementById("lossSeg").addEventListener("click", e => {
+  const btn = e.target.closest("button"); if(!btn) return;
+  state.loss = btn.dataset.loss;
+  [...e.currentTarget.children].forEach(b => b.setAttribute("aria-pressed", b === btn));
+  stopPlay(); rebuild(true);
+});
+document.getElementById("preset").addEventListener("click", () => {
+  state.w = -3; document.getElementById("w").value = -3;
+  document.getElementById("w-val").textContent = "-3.00";
+  stopPlay(); rebuild(true);
+});
+document.getElementById("step").onclick = () => { stopPlay();
+  if(state.frame < state.frames.length-1){ state.frame++; render(); } };
+document.getElementById("prev").onclick = () => { stopPlay();
+  if(state.frame > 0){ state.frame--; render(); } };
+document.getElementById("reset").onclick = () => { stopPlay(); state.frame = 0; render(); };
+function stopPlay(){ if(state.playing){ clearInterval(state.playing); state.playing = null;
+  document.getElementById("play").textContent = "Play sweep"; } }
+document.getElementById("play").onclick = () => {
+  if(state.playing){ stopPlay(); return; }
+  state.frame = 0; render();
+  document.getElementById("play").textContent = "Pause";
+  state.playing = setInterval(() => {
+    if(state.frame >= state.frames.length-1){ stopPlay(); return; }
+    state.frame++; render();
+  }, 850);
+};
+
+rebuild(true);
+</script>

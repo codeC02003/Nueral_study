@@ -1,0 +1,83 @@
+  resumed from step 40,000
+A_ind  165,120 params  2L x 4H x 128d  attention-only  mps
+periods: train 40-60 minus [45, 55], held out [45, 55]
+
+  42,500  loss 4.1153   first-occurrence 4.8555   repeated 2.9502   ratio 0.608   46s
+  45,000  loss 4.0903   first-occurrence 4.8545   repeated 2.9232   ratio 0.602   91s
+  47,500  loss 4.0454   first-occurrence 4.8696   repeated 2.8386   ratio 0.583   139s
+  50,000  loss 4.0783   first-occurrence 4.8724   repeated 2.7674   ratio 0.568   188s
+  52,500  loss 4.0120   first-occurrence 4.8856   repeated 2.6949   ratio 0.552   238s
+  55,000  loss 4.0297   first-occurrence 4.8643   repeated 2.7061   ratio 0.556   288s
+  57,500  loss 3.9746   first-occurrence 4.8792   repeated 2.6495   ratio 0.543   339s
+  60,000  loss 4.0021   first-occurrence 4.9062   repeated 2.5571   ratio 0.521   390s
+  62,500  loss 3.9883   first-occurrence 4.8859   repeated 2.6395   ratio 0.540   441s
+  65,000  loss 4.0472   first-occurrence 4.8719   repeated 2.5646   ratio 0.526   493s
+  67,500  loss 4.0096   first-occurrence 4.8733   repeated 2.5805   ratio 0.530   544s
+  70,000  loss 4.0557   first-occurrence 4.9334   repeated 2.5684   ratio 0.521   595s
+  72,500  loss 3.9411   first-occurrence 4.9142   repeated 2.4698   ratio 0.503   647s
+  75,000  loss 3.9393   first-occurrence 4.8738   repeated 2.4929   ratio 0.511   699s
+  77,500  loss 3.9020   first-occurrence 4.8887   repeated 2.3846   ratio 0.488   751s
+  80,000  loss 3.7742   first-occurrence 4.8934   repeated 1.9976   ratio 0.408   804s
+  82,500  loss 3.5245   first-occurrence 4.8577   repeated 1.4284   ratio 0.294   865s
+  85,000  loss 3.4004   first-occurrence 4.8541   repeated 1.2332   ratio 0.254   938s
+  87,500  loss 3.3955   first-occurrence 4.8536   repeated 1.2054   ratio 0.248   1009s
+  90,000  loss 3.3766   first-occurrence 4.8513   repeated 1.0812   ratio 0.223   1082s
+  92,500  loss 3.4557   first-occurrence 4.8515   repeated 1.0639   ratio 0.219   1154s
+  95,000  loss 3.3963   first-occurrence 4.8513   repeated 1.0712   ratio 0.221   1224s
+  97,500  loss 3.4144   first-occurrence 4.8513   repeated 1.0271   ratio 0.212   1297s
+  100,000  loss 3.3440   first-occurrence 4.8519   repeated 1.0221   ratio 0.211   1369s
+  102,500  loss 3.4381   first-occurrence 4.8498   repeated 1.0136   ratio 0.209   1442s
+  105,000  loss 3.4089   first-occurrence 4.8523   repeated 1.0508   ratio 0.217   1514s
+  107,500  loss 3.3549   first-occurrence 4.8517   repeated 1.0232   ratio 0.211   1587s
+  110,000  loss 3.3594   first-occurrence 4.8504   repeated 1.0825   ratio 0.223   1660s
+  112,500  loss 3.3612   first-occurrence 4.8498   repeated 1.0717   ratio 0.221   1731s
+  115,000  loss 3.3319   first-occurrence 4.8530   repeated 1.0505   ratio 0.216   1802s
+  117,500  loss 3.3400   first-occurrence 4.8515   repeated 1.0071   ratio 0.208   1872s
+  120,000  loss 3.4276   first-occurrence 4.8518   repeated 0.9802   ratio 0.202   28942s
+  122,500  loss 3.3401   first-occurrence 4.8519   repeated 1.0674   ratio 0.220   29040s
+  125,000  loss 3.3242   first-occurrence 4.8502   repeated 1.0379   ratio 0.214   29116s
+  127,500  loss 3.3630   first-occurrence 4.8508   repeated 1.0256   ratio 0.211   29192s
+  130,000  loss 3.3686   first-occurrence 4.8505   repeated 1.0762   ratio 0.222   29493s
+  132,500  loss 3.3729   first-occurrence 4.8527   repeated 1.0324   ratio 0.213   30056s
+  135,000  loss 3.3878   first-occurrence 4.8501   repeated 0.9870   ratio 0.204   30123s
+  137,500  loss 3.3883   first-occurrence 4.8511   repeated 0.9921   ratio 0.205   30194s
+  140,000  loss 3.4049   first-occurrence 4.8508   repeated 1.0255   ratio 0.211   30257s
+  142,500  loss 3.3639   first-occurrence 4.8504   repeated 1.0271   ratio 0.212   30325s
+  145,000  loss 3.3594   first-occurrence 4.8509   repeated 0.9379   ratio 0.193   30418s
+  147,500  loss 3.2587   first-occurrence 4.8498   repeated 0.9554   ratio 0.197   30525s
+  150,000  loss 3.3571   first-occurrence 4.8508   repeated 0.9256   ratio 0.191   30632s
+  152,500  loss 3.2961   first-occurrence 4.8516   repeated 0.9080   ratio 0.187   30739s
+  155,000  loss 3.2897   first-occurrence 4.8513   repeated 0.9489   ratio 0.196   30853s
+  157,500  loss 3.3474   first-occurrence 4.8502   repeated 0.9426   ratio 0.194   30964s
+  160,000  loss 3.3688   first-occurrence 4.8504   repeated 0.9050   ratio 0.187   31082s
+  162,500  loss 3.3220   first-occurrence 4.8505   repeated 0.9269   ratio 0.191   31199s
+  165,000  loss 3.3711   first-occurrence 4.8516   repeated 0.8907   ratio 0.184   31314s
+  167,500  loss 3.3182   first-occurrence 4.8508   repeated 0.9387   ratio 0.194   31439s
+  170,000  loss 3.3876   first-occurrence 4.8500   repeated 0.8901   ratio 0.184   31540s
+  172,500  loss 3.3658   first-occurrence 4.8511   repeated 0.9028   ratio 0.186   31633s
+  175,000  loss 3.3888   first-occurrence 4.8495   repeated 0.8680   ratio 0.179   31725s
+  177,500  loss 3.3068   first-occurrence 4.8490   repeated 0.8679   ratio 0.179   31818s
+  180,000  loss 3.2469   first-occurrence 4.8500   repeated 0.9107   ratio 0.188   31928s
+
+==================================================================
+VALIDITY PRECONDITION (fixed before training)
+  1. repeated < 0.5 x first-occurrence : 0.8821 < 2.4251   PASS
+  3. held-out L within 1.25x           : 0.9045 < 1.1026   PASS
+
+GROUND TRUTH (computed before B is run, never adjusted)
+        head   prev-token score   induction score
+        L0H0             0.0774                 -
+        L0H1             0.1894                 -
+        L0H2             0.0311                 -
+        L0H3             0.0367                 -
+        L1H0                  -            0.0066
+        L1H1                  -            0.0012
+        L1H2                  -            0.0070
+        L1H3                  -            0.0001
+
+  C = []   |C| = 0
+  2. |C|>=2 with one per layer          : FAIL
+  chance level for precision@2          : C(0,2)/28 = 0.0%
+
+  PRECONDITION: VOID
+  -> findings/v5_groundtruth.json
